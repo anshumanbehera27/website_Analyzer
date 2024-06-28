@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Website Analyzer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>Website Analyzer</h1>
+    <form method="post" action="/analyze">
+        URL: <input type="text" name="url">
+        <input type="submit" value="Analyze Website">
+    </form>
+    <form method="post" action="/analyze_subdomains">
+        Domain: <input type="text" name="domain">
+        <input type="submit" value="Analyze Subdomains">
+    </form>
+    <form method="post" action="/fetch_resources">
+        Resource URL: <input type="text" name="resource_url">
+        <input type="submit" value="Fetch External Resources">
+    </form>
+    
+    {% if result %}
+    <h2>Domain Information</h2>
+    <ul>
+        <li>Domain: {{ result.domain }}</li>
+        <li>Server IP: {{ result.server_ip }}</li>
+        <li>Location: {{ result.location }}</li>
+        <li>ASN: {{ result.asn }}</li>
+        <li>ISP: {{ result.isp }}</li>
+        <li>Organization: {{ result.organization }}</li>
+    </ul>
+    {% endif %}
+    
+    {% if resources %}
+    <h2>External Resources</h2>
+    <h3>Stylesheets:</h3>
+    <ul>
+        {% for stylesheet in resources.stylesheets %}
+        <li>{{ stylesheet }}</li>
+        {% endfor %}
+    </ul>
+    <h3>JavaScripts:</h3>
+    <ul>
+        {% for javascript in resources.javascripts %}
+        <li>{{ javascript }}</li>
+        {% endfor %}
+    </ul>
+    <h3>Images:</h3>
+    <ul>
+        {% for image in resources.images %}
+        <li>{{ image }}</li>
+        {% endfor %}
+    </ul>
+    <h3>IFrame Sources:</h3>
+    <ul>
+        {% for iframe in resources.iframes %}
+        <li>{{ iframe }}</li>
+        {% endfor %}
+    </ul>
+    <h3>Anchor Tag References:</h3>
+    <ul>
+        {% for anchor_tag in resources.anchor_tags %}
+        <li>{{ anchor_tag }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    
+    {% if subdomains %}
+    <h2>Subdomains</h2>
+    <ul>
+        {% for subdomain in subdomains %}
+        <li>{{ subdomain }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    
+    {% if error %}
+    <h2>Error</h2>
+    <p>{{ error }}</p>
+    {% endif %}
+</body>
+</html>
