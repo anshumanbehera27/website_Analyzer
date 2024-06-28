@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WebSocket Example</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+
+    <script type="text/javascript">
+        document.addEventListener('DOMContentLoaded', (event) => {
+            var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
+            
+            socket.on('connect', function() {
+                console.log('Connected to server');
+            });
+            
+            socket.on('disconnect', function() {
+                console.log('Disconnected from server');
+            });
+
+            socket.on('response', function(data) {
+                console.log('Received:', data);
+                if (data.error) {
+                    alert('Error: ' + data.error);
+                } else {
+                    updateUI(data);
+                }
+            });
+
+            function updateUI(data) {
+                var output = document.getElementById('output');
+                var html = '';
+
+                if (data.data) {
+                    html += '<h3>Result</h3><pre>' + JSON.stringify(data.data, null, 2) + '</pre>';
+                } else if (data.subdomains) {
+                    html += '<h3>Subdomains</h3><ul>';
+                    data.subdomains.forEach(function(subdomain) {
+                        html += '<li>' + subdomain + '</li>';
+                    });
+                    html += '</ul>';
+                }
+
+                output.innerHTML = html;
+            }
+
+            document.getElementById('fetch_resources').addEventListener('click', function() {
+                var url = document.getElementById('resource_url').value.trim();
+                if (url === '') {
+                    alert('Please enter a valid URL');
+                    return;
+                }
+                socket.send({operation: 'fetch_resources', url: url});
+            });
+
+            document.getElementById('get_info').addEventListener('click', function() {
+                var url = document.getElementById('url').value.trim();
+                if (url === '') {
+                    alert('Please enter a valid URL');
+                    return;
+                }
+                socket.send({operation: 'get_info', url: url});
+            });
+
+            document.getElementById('get_subdomains').addEventListener('click', function() {
+                var domain = document.getElementById('domain').value.trim();
+                if (domain === '') {
+                    alert('Please enter a valid domain');
+                    return;
+                }
+                socket.send({operation: 'get_subdomains', domain: domain});
+            });
+        });
+    </script>
+</head>
+<body>
+    <h1>WebSocket Example</h1>
+
+    <div>
+        <h2>Fetch External Resources</h2>
+        <label for="resource_url">URL:</label>
+        <input type="text" id="resource_url" placeholder="Enter URL">
+        <button id="fetch_resources">Fetch Resources</button>
+    </div>
+
+    <div>
+        <h2>Get Info</h2>
+        <label for="url">URL:</label>
+        <input type="text" id="url" placeholder="Enter URL">
+        <button id="get_info">Get Info</button>
+    </div>
+    
+    <div>
+        <h2>Get Subdomains</h2>
+        <label for="domain">Domain:</label>
+        <input type="text" id="domain" placeholder="Enter Domain">
+        <button id="get_subdomains">Get Subdomains</button>
+    </div>
+
+    <div id="output"></div>
+</body>
+</html>

@@ -93,7 +93,7 @@ def analyze():
         else:
             return render_template('index.html', result=None, error='Failed to retrieve information', resources=None, subdomains=None)
     except Exception as e:
-        return render_template('index.html', result=None, error=str(e), resources=None, subdomains=None)
+        return render_template('index.html', result=None, error=str(e), resources=None, subdomains=None)    
 
 @app.route('/analyze_subdomains', methods=['POST'])
 def analyze_subdomains():
